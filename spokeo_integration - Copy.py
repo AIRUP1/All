@@ -30,8 +30,8 @@ print("  - Property Details")
 
 class SpokeoAPI:
     def __init__(self, username: str, password: str):
-        self.username = bolison10@gmail.com
-        self.password = Bbusta10
+        self.username = 
+
         self.session = requests.Session()
         self.base_url = "https://www.spokeo.com"
         self.logged_in = False
