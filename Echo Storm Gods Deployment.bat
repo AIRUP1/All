@@ -59,8 +59,6 @@ echo %CD%\stormgods_deployment
 
 echo.
 echo 📋 Environment Variables to Set:
-echo SPOKEO_EMAIL=bolison10@gmail.com
-echo SPOKEO_PASSWORD=your_password
 echo STRIPE_PUBLIC_KEY=your_stripe_key
 echo OPENAI_API_KEY=your_openai_key
 

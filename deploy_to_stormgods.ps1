@@ -135,8 +135,6 @@ switch ($choice) {
 }
 
 Write-Host "`n📋 IMPORTANT: Environment Variables to Set:" -ForegroundColor Yellow
-Write-Host "SPOKEO_EMAIL=bolison10@gmail.com" -ForegroundColor White
-Write-Host "SPOKEO_PASSWORD=your_password" -ForegroundColor White
 Write-Host "STRIPE_PUBLIC_KEY=your_stripe_public_key" -ForegroundColor White
 Write-Host "STRIPE_SECRET_KEY=your_stripe_secret_key" -ForegroundColor White
 Write-Host "OPENAI_API_KEY=your_openai_key" -ForegroundColor White
@@ -153,7 +151,7 @@ Write-Host "✅ Test interactive hail maps" -ForegroundColor White
 
 Write-Host "`n🌩️ StormBuster Features Deployed:" -ForegroundColor Cyan
 Write-Host "• Storm Damage Assessment" -ForegroundColor White
-Write-Host "• Property Search Engine (Spokeo Integration)" -ForegroundColor White
+Write-Host "• Property Search Engine" -ForegroundColor White
 Write-Host "• AI Chat (ChatGPT, Claude, Gemini)" -ForegroundColor White
 Write-Host "• Lead Generation Pipeline" -ForegroundColor White
 Write-Host "• Vendor Registration System" -ForegroundColor White

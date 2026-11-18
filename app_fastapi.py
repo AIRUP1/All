@@ -18,7 +18,6 @@ import uvicorn
 
 # Import your existing modules
 from nationwide_property_search_engine import NationwidePropertySearchEngine
-from spokeo_integration import SpokeoAPI
 from ai_chat_integration import ai_chat, AIProvider
 from results_roofing_integration import RoofingIntegration
 from vendor_registration_system import VendorRegistrationSystem
@@ -41,7 +40,6 @@ app.add_middleware(
 
 # Initialize the search engine
 search_engine = NationwidePropertySearchEngine()
-spokeo_api = SpokeoAPI("bolison10@gmail.com", "Bbusta10")
 results_roofing = RoofingIntegration()
 vendor_system = VendorRegistrationSystem()
 
@@ -171,25 +169,11 @@ async def get_leads():
 
 @app.post("/api/search")
 async def search_property(request: SearchRequest):
-    """Search for property using Spokeo API"""
-    try:
-        result = spokeo_api.search_property_by_address(
-            request.address, 
-            request.city, 
-            request.state, 
-            request.zipcode
-        )
-        
-        return {
-            'success': True,
-            'data': result
-        }
-    except Exception as e:
-        print(f"Error in property search: {e}")
-        return {
-            'success': False,
-            'error': str(e)
-        }
+    """Property owner lookup is disabled (third-party people-search integration removed)."""
+    return {
+        'success': False,
+        'error': 'Property owner lookup is not available'
+    }
 
 @app.post("/api/generate-leads")
 async def generate_leads(request: GenerateLeadsRequest):
@@ -206,9 +190,9 @@ async def generate_leads(request: GenerateLeadsRequest):
         if not events_df.empty:
             geo_df = search_engine.geocode_events(events_df)
             property_df = search_engine.search_property_data(
-                geo_df, 
-                "bolison10@gmail.com", 
-                "Bbusta10"
+                geo_df,
+                None,
+                None
             )
             leads_df = search_engine.create_lead_database(geo_df, property_df)
             summary = search_engine.generate_reports(leads_df)
@@ -271,26 +255,6 @@ async def download_file(filename: str):
         print(f"Error downloading file: {e}")
         return {"error": str(e)}
 
-@app.get("/api/spokeo-status")
-async def get_spokeo_status():
-    """Get Spokeo API connection status"""
-    try:
-        status = spokeo_api.login()
-        
-        return {
-            'connected': status,
-            'username': 'bolison10@gmail.com',
-            'last_checked': datetime.now().isoformat()
-        }
-    except Exception as e:
-        print(f"Error checking Spokeo status: {e}")
-        return {
-            'connected': False,
-            'username': 'bolison10@gmail.com',
-            'error': str(e),
-            'last_checked': datetime.now().isoformat()
-        }
-
 @app.get("/api/vendor-types")
 async def get_vendor_types():
     """Get list of available vendor types"""
@@ -346,7 +310,6 @@ if __name__ == '__main__':
     print("=" * 50)
     print("🌩️  StormBuster - Strike While the Storm Rages")
     print("📊 Integrated with DFW Hail Pipeline")
-    print("🔑 Spokeo API: bolison10@gmail.com")
     print("🌐 Domain: stormgods.us")
     print("=" * 50)
     
