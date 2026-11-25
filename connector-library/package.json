@@ -1,0 +1,16 @@
+{
+  "name": "connector-library",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Plugin-based connector library with a 3D catalog viewer",
+  "engines": { "node": ">=20" },
+  "bin": { "connectors": "sdk/cli.mjs" },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "list": "node sdk/cli.mjs list",
+    "status": "node sdk/cli.mjs status",
+    "build:ui": "node sdk/cli.mjs build-ui",
+    "ui": "node sdk/cli.mjs build-ui && node sdk/serve.mjs"
+  }
+}
