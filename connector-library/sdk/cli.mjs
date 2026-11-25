@@ -2,7 +2,7 @@
 import { writeFile, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { createRegistry } from "./registry.mjs";
+import { createRegistry, loadCatalog, upsertManifest } from "./registry.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const [, , cmd, ...args] = process.argv;
@@ -23,6 +23,7 @@ const help = `connector-library CLI
   status                     list + live health probe for configured connectors
   test <id>                  health probe for one connector
   call <id> <METHOD> <path>  authenticated request (prints status + JSON body)
+  register <file.json>       add or update connector(s) in catalog.json (manifest or {connectors:[]}) — exported from the viewer
   env                        print a blank .env template
   build-ui                   regenerate catalog.js for the 3D viewer
 `;
@@ -53,6 +54,18 @@ switch (cmd) {
     if (!id || !method || !p) { console.error("usage: call <id> <METHOD> <path>"); process.exit(2); }
     const r = await reg.get(id).request(method, p);
     console.log(r.status, JSON.stringify(r.data, null, 2));
+    break;
+  }
+  case "register": {
+    if (!args[0]) { console.error("usage: register <file.json>"); process.exit(2); }
+    const input = JSON.parse(await readFile(path.resolve(args[0]), "utf8"));
+    const manifests = Array.isArray(input) ? input : input.connectors ?? [input];
+    const file = path.join(ROOT, "catalog.json");
+    const catalog = await loadCatalog(file);
+    for (const m of manifests) { delete m._local; console.log(`${upsertManifest(catalog, m)}: ${m.id}`); }
+    await writeFile(file, JSON.stringify(catalog, null, 2) + "\n");
+    await writeFile(path.join(ROOT, "catalog.js"), `window.CONNECTOR_CATALOG = ${JSON.stringify(catalog)};\n`);
+    console.log("catalog.json + catalog.js updated. Add a plugins/<id>.mjs only if you need custom actions.");
     break;
   }
   case "env": process.stdout.write(reg.envTemplate()); break;

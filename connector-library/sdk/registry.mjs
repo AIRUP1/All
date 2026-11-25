@@ -64,6 +64,17 @@ export function validateManifest(m) {
   for (const [, n] of (m.health?.path ?? "").matchAll(/\{([A-Z0-9_]+)\}/g)) if (!names.has(n)) bad(`health.path references undeclared env var ${n}`);
 }
 
+/** Insert or replace a manifest (by id) in a catalog object. Returns "added" | "updated". */
+export function upsertManifest(catalog, manifest) {
+  validateManifest(manifest);
+  if (manifest.category && !catalog.categories?.[manifest.category]) {
+    throw new Error(`Invalid manifest "${manifest.id}": unknown category "${manifest.category}"`);
+  }
+  const i = catalog.connectors.findIndex((c) => c.id === manifest.id);
+  if (i >= 0) { catalog.connectors[i] = manifest; return "updated"; }
+  catalog.connectors.push(manifest); return "added";
+}
+
 export async function loadCatalog(file = path.join(ROOT, "catalog.json")) {
   return JSON.parse(await readFile(file, "utf8"));
 }

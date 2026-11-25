@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createRegistry, Registry, definePlugin, loadCatalog } from "../sdk/registry.mjs";
+import { createRegistry, Registry, definePlugin, loadCatalog, upsertManifest } from "../sdk/registry.mjs";
 import { MissingCredentialsError } from "../sdk/connector.mjs";
 
 const mockFetch = (log, status = 200, body = { ok: true }) => async (url, init) => {
@@ -79,4 +79,15 @@ test("invalid manifests are rejected", () => {
 test("missing template var throws MissingCredentialsError", async () => {
   const reg = await createRegistry({ env: {}, fetch: mockFetch([]) });
   await assert.rejects(() => reg.get("supabase").request("GET", "/rest/v1/"), MissingCredentialsError);
+});
+
+test("upsertManifest adds, updates in place, and rejects unknown categories", async () => {
+  const cat = structuredClone(await loadCatalog());
+  const n = cat.connectors.length;
+  const m = { id: "acme", name: "Acme", category: "infra", baseUrl: "https://acme.test", auth: { type: "bearer", env: "ACME_KEY" }, env: [{ name: "ACME_KEY", required: true }] };
+  assert.equal(upsertManifest(cat, m), "added");
+  assert.equal(upsertManifest(cat, { ...m, name: "Acme 2" }), "updated");
+  assert.equal(cat.connectors.length, n + 1);
+  assert.equal(cat.connectors.find((c) => c.id === "acme").name, "Acme 2");
+  assert.throws(() => upsertManifest(cat, { ...m, id: "x2", category: "nope" }), /unknown category/);
 });

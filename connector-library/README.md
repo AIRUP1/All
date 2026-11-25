@@ -33,7 +33,15 @@ npm test
 - The viewer's "marked configured" switch is a `localStorage` flag in your browser — it holds no secrets.
 - `serve.mjs` binds to `127.0.0.1` and only serves `index.html`, `catalog.js` and `vendor/*.js`.
 
-## Add a connector
+## Register or update a connector (from the viewer)
+
+Click **＋ Register connector** (or **Update this connector** on any tile). The form takes the service's base URL, auth style, health check and capabilities. It accepts only env var **names** — pasting something that looks like a key is rejected. Saving creates a *local draft* (browser only, shown in 3D with a badge). To make it permanent, download the JSON and run:
+
+```bash
+node sdk/cli.mjs register acme-crm.json   # adds or updates catalog.json + catalog.js
+```
+
+## Add a connector (by hand)
 
 **Declarative** — append to `catalog.json`, then `npm run build:ui`:
 
